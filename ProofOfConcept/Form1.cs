@@ -28,9 +28,14 @@ namespace ProofOfConcept
         private void Button1_Click(object sender, EventArgs e)
         {
             shapeT.Rotate();
-            this.Invalidate();
+            updateGraphics();
         }
 
+        private void updateGraphics()
+        {
+            pnlField.Invalidate();
+            this.Invalidate();
+        }
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             // Vraag het Graphics object op, dat bij dit form hoort.
@@ -48,13 +53,40 @@ namespace ProofOfConcept
             }
 
 
+            
+            //foreach (Block block in game.Field)
+            //{
+            //    int x = margin + point.X * blockSize;
+            //    int y = margin + point.Y * blockSize;
+            //    graphics.FillRectangle(Brushes.Black, x, y, blockSize, blockSize);
+            //}
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e)
+        {
+
+        }
+        private int CovertPixelsToPoints(float pixels)
+        {
+            Graphics g = CreateGraphics();
+            float fBlockSizePoint = pixels * 72 / g.DpiX;
+            g.Dispose();
+            return Convert.ToInt32(fBlockSizePoint);
+        }
+
+        private void PnlField_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics graphics = e.Graphics;
+            int blockSizePixels = 20;
+
+            //pixels = (1/72)*graphics.DpiX*points
             Block block;
             Brush brush = Brushes.Red;
-            for (int y = 0; y < 23; y++)
+            for (int y = 0; y < 24; y++)
             {
 
-                
-                for (int x = 0; x < 9; x++)
+
+                for (int x = 0; x < 10; x++)
                 {
                     block = game.Field[x, y];
                     if (block.Filled)
@@ -83,22 +115,11 @@ namespace ProofOfConcept
                                 brush = Brushes.Green;
                                 break;
                         }
-                        graphics.FillRectangle(brush, x*blockSize, y*blockSize, blockSize, blockSize);
+                        graphics.FillRectangle(brush, CovertPixelsToPoints(x * blockSizePixels), CovertPixelsToPoints(y * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
                     }
-                    
+
                 }
             }
-            //foreach (Block block in game.Field)
-            //{
-            //    int x = margin + point.X * blockSize;
-            //    int y = margin + point.Y * blockSize;
-            //    graphics.FillRectangle(Brushes.Black, x, y, blockSize, blockSize);
-            //}
-        }
-
-        private void Timer1_Tick(object sender, EventArgs e)
-        {
-
         }
     }
 }

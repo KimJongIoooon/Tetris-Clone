@@ -53,7 +53,7 @@
             // pnlField
             // 
             this.pnlField.BackColor = System.Drawing.SystemColors.Control;
-            this.pnlField.Location = new System.Drawing.Point(144, 12);
+            this.pnlField.Location = new System.Drawing.Point(222, 12);
             this.pnlField.Name = "pnlField";
             this.pnlField.Size = new System.Drawing.Size(200, 480);
             this.pnlField.TabIndex = 1;
