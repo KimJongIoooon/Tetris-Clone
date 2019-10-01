@@ -21,5 +21,17 @@ namespace ProofOfConcept
         public Block()
         {
         }
+
+        public override string ToString()
+        {
+            if (Filled)
+            {
+                return Color.ToString();
+            } else
+            {
+                return "empty";
+            }
+            
+        }
     }
 }

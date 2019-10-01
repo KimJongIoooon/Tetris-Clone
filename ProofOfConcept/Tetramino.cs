@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Drawing;
 namespace ProofOfConcept
 {
-    class Shape
+    class Tetramino
     {
-        public List<Point> ShapePoints;
+        public List<Point> Points;
         public int X;
         public int Y;
         private Colors _color;
@@ -23,17 +23,17 @@ namespace ProofOfConcept
                 _color = value;
             }
         }
-        public Shape(List<Point> baseShape, int x, int y)
+        public Tetramino(List<Point> baseShape, int x, int y)
         {
-            this.ShapePoints = baseShape;
+            this.Points = baseShape;
             X = x;
             Y = y;
             _color = Colors.red;
         }
 
-        public Shape(List<Point> baseShape, int x, int y, Colors color)
+        public Tetramino(List<Point> baseShape, int x, int y, Colors color)
         {
-            this.ShapePoints = baseShape;
+            this.Points = baseShape;
             X = x;
             Y = y;
             _color = color;
@@ -44,14 +44,14 @@ namespace ProofOfConcept
             //rotates the figure
             int[,] rotateMatrix = new int[,] { { 0, 1 }, { -1, 0 } };
             List<Point> newShape = new List<Point>();
-            foreach (Point point in ShapePoints)
+            foreach (Point point in Points)
             {
                 double rotateX = Math.Round(point.X * Math.Cos(Math.PI / 2) - point.Y * Math.Sin(Math.PI / 2));
                 double rotateY = Math.Round(point.X * Math.Sin(Math.PI / 2) - point.Y * Math.Cos(Math.PI / 2));
                 Point rotatedPoint = new Point(Convert.ToInt32(rotateX), Convert.ToInt32(rotateY));
                 newShape.Add(rotatedPoint);
             }
-            ShapePoints = newShape;
+            Points = newShape;
         }
         
     }

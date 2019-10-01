@@ -14,13 +14,13 @@ namespace ProofOfConcept
     {
         Game game;
         List<Point> pointsT = new List<Point>() { new Point(0, 0), new Point(0, 1) , new Point(0, -1), new Point(1, 1)};
-        Shape shapeT;
+        Tetramino shapeT;
 
 
         public Form1()
         {
             InitializeComponent();
-            shapeT = new Shape(pointsT, 10, 6);
+            shapeT = new Tetramino(pointsT, 10, 6);
             game = new Game();
             game.FillFieldTest();
         }
@@ -28,6 +28,7 @@ namespace ProofOfConcept
         private void Button1_Click(object sender, EventArgs e)
         {
             shapeT.Rotate();
+
             updateGraphics();
         }
 
@@ -45,7 +46,7 @@ namespace ProofOfConcept
             int margin = 100;
             int blockSize = 10;
 
-            foreach (Point point in shapeT.ShapePoints)
+            foreach (Point point in shapeT.Points)
             {
                 int x = margin + point.X * blockSize;
                 int y = margin + point.Y * blockSize;
@@ -56,6 +57,8 @@ namespace ProofOfConcept
         private void Timer1_Tick(object sender, EventArgs e)
         {
             game.Tick();
+            lblTest.Enabled = !lblTest.Enabled;
+            updateGraphics();
         }
         private int CovertPixelsToPoints(float pixels)
         {
@@ -73,45 +76,54 @@ namespace ProofOfConcept
             //pixels = (1/72)*graphics.DpiX*points
             Block block;
             Brush brush = Brushes.Red;
-            for (int y = 0; y < 24; y++)
+
+            //Block[,] field = new Block[10, 24];
+            Block[,] field = game.Field;
+            
+            field = game.Field.Clone() as Block[,];
+            var copy2d = orig2d.Select(a => a.ToArray()).ToArray();
+            if (game.Started)
             {
-
-
-                for (int x = 0; x < 10; x++)
+                
+                for (int y = 0; y < 24; y++)
                 {
-                    block = game.Field[x, y];
-                    if (block.Filled)
+                    for (int x = 0; x < 10; x++)
                     {
-                        switch (block.Color)
+                        block = field[x, y];
+                        if (block.Filled)
                         {
-                            case Colors.blue:
-                                brush = Brushes.Blue;
-                                break;
-                            case Colors.turquoise:
-                                brush = Brushes.Turquoise;
-                                break;
-                            case Colors.yellow:
-                                brush = Brushes.Yellow;
-                                break;
-                            case Colors.red:
-                                brush = Brushes.Red;
-                                break;
-                            case Colors.orange:
-                                brush = Brushes.Orange;
-                                break;
-                            case Colors.purple:
-                                brush = Brushes.Purple;
-                                break;
-                            case Colors.green:
-                                brush = Brushes.Green;
-                                break;
-                        }
-                        graphics.FillRectangle(brush, CovertPixelsToPoints(x * blockSizePixels), CovertPixelsToPoints(y * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
-                    }
+                            switch (block.Color)
+                            {
+                                case Colors.blue:
+                                    brush = Brushes.Blue;
+                                    break;
+                                case Colors.turquoise:
+                                    brush = Brushes.Turquoise;
+                                    break;
+                                case Colors.yellow:
+                                    brush = Brushes.Yellow;
+                                    break;
+                                case Colors.red:
+                                    brush = Brushes.Red;
+                                    break;
+                                case Colors.orange:
+                                    brush = Brushes.Orange;
+                                    break;
+                                case Colors.purple:
+                                    brush = Brushes.Purple;
+                                    break;
+                                case Colors.green:
+                                    brush = Brushes.Green;
+                                    break;
+                            }
+                            graphics.FillRectangle(brush, CovertPixelsToPoints(x * blockSizePixels), CovertPixelsToPoints(y * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
+                        } 
 
+                    }
                 }
             }
         }
+            
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
@@ -135,6 +147,20 @@ namespace ProofOfConcept
             {
                 game.Stop();
             }
+        }
+
+        private void BtnStart_Click(object sender, EventArgs e)
+        {
+            //Start game and start or restart timer.
+
+            if (!game.Started)
+            {
+
+                timer1.Start();
+
+            }
+            game.Start();
+            
         }
     }
 }
