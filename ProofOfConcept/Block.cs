@@ -11,7 +11,7 @@ namespace ProofOfConcept
     class Block
     {
         public bool Filled = false; 
-        public readonly Colors Color;
+        public Colors Color;
         public Block(Colors color)
         {
             Color = color;
@@ -20,7 +20,6 @@ namespace ProofOfConcept
 
         public Block()
         {
-
         }
     }
 }

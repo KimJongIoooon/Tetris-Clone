@@ -51,20 +51,11 @@ namespace ProofOfConcept
                 int y = margin + point.Y * blockSize;
                 graphics.FillRectangle(Brushes.Black, x, y, blockSize, blockSize);
             }
-
-
-            
-            //foreach (Block block in game.Field)
-            //{
-            //    int x = margin + point.X * blockSize;
-            //    int y = margin + point.Y * blockSize;
-            //    graphics.FillRectangle(Brushes.Black, x, y, blockSize, blockSize);
-            //}
         }
 
         private void Timer1_Tick(object sender, EventArgs e)
         {
-
+            game.Tick();
         }
         private int CovertPixelsToPoints(float pixels)
         {
@@ -119,6 +110,30 @@ namespace ProofOfConcept
                     }
 
                 }
+            }
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Right)
+            {
+                game.Right();
+            }
+            if (e.KeyCode == Keys.Left)
+            {
+                game.Left();
+            }
+            if (e.KeyCode == Keys.Space)
+            {
+                game.Drop();
+            }
+            if (e.KeyCode == Keys.Enter)
+            {
+                game.Start();
+            }
+            if (e.KeyCode == Keys.Return)
+            {
+                game.Stop();
             }
         }
     }

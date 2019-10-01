@@ -9,15 +9,34 @@ namespace ProofOfConcept
     class Shape
     {
         public List<Point> ShapePoints;
-        int X;
-        int Y; 
-        enum Color {Red, DarkBlue, LightBlue, Green, Yellow, Orange, purple};
-
+        public int X;
+        public int Y;
+        private Colors _color;
+        public Colors Color
+        {
+            get
+            {
+                return _color;
+            }
+            set
+            {
+                _color = value;
+            }
+        }
         public Shape(List<Point> baseShape, int x, int y)
         {
             this.ShapePoints = baseShape;
             X = x;
             Y = y;
+            _color = Colors.red;
+        }
+
+        public Shape(List<Point> baseShape, int x, int y, Colors color)
+        {
+            this.ShapePoints = baseShape;
+            X = x;
+            Y = y;
+            _color = color;
         }
 
         public void Rotate()
