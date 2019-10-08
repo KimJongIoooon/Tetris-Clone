@@ -7,10 +7,9 @@ using System.Drawing;
 
 namespace ProofOfConcept
 {
-    public enum Colors { turquoise, blue, orange, yellow, green, purple, red};
     class Block
     {
-        public bool Filled = false; 
+        public bool Filled = false;
         public Colors Color;
         public Block(Colors color)
         {

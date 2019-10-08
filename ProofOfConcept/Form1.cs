@@ -71,69 +71,79 @@ namespace ProofOfConcept
         private void PnlField_Paint(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            int blockSizePixels = 20;
-
-            //pixels = (1/72)*graphics.DpiX*points
-            Block block;
-            Brush brush = Brushes.Red;
-
-            //Block[,] field = new Block[10, 24];
-            Block[,] field = game.Field;
             
-            field = game.Field.Clone() as Block[,];
-            var copy2d = orig2d.Select(a => a.ToArray()).ToArray();
+            int blockSizePixels = 20;
+            
             if (game.Started)
             {
-                
+                //draw field
                 for (int y = 0; y < 24; y++)
                 {
                     for (int x = 0; x < 10; x++)
                     {
-                        block = field[x, y];
-                        if (block.Filled)
+                        if (game.Field[x, y].Filled)
                         {
-                            switch (block.Color)
-                            {
-                                case Colors.blue:
-                                    brush = Brushes.Blue;
-                                    break;
-                                case Colors.turquoise:
-                                    brush = Brushes.Turquoise;
-                                    break;
-                                case Colors.yellow:
-                                    brush = Brushes.Yellow;
-                                    break;
-                                case Colors.red:
-                                    brush = Brushes.Red;
-                                    break;
-                                case Colors.orange:
-                                    brush = Brushes.Orange;
-                                    break;
-                                case Colors.purple:
-                                    brush = Brushes.Purple;
-                                    break;
-                                case Colors.green:
-                                    brush = Brushes.Green;
-                                    break;
-                            }
+                            Brush brush = ColorToBrush(game.Field[x, y].Color);
                             graphics.FillRectangle(brush, CovertPixelsToPoints(x * blockSizePixels), CovertPixelsToPoints(y * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
                         } 
 
                     }
                 }
+                //draw shape
+                foreach (Point point in game._activeTetramino.Points)
+                {
+                    int x = game._activeTetramino.X + point.X;
+                    int y = game._activeTetramino.Y + point.Y;
+                    if(x>=0 && y >= 0)
+                    {
+                        Brush brush = ColorToBrush(game.Field[x, y].Color);
+                        graphics.FillRectangle(brush, CovertPixelsToPoints(x * blockSizePixels), CovertPixelsToPoints(y * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
+                    }
+                }
+                
             }
         }
-            
 
+        Brush ColorToBrush(Colors Color)
+        {
+            Brush brush = Brushes.White;
+            switch (Color)
+            {
+                case Colors.Blue:
+                    brush = Brushes.Blue;
+                    break;
+                case Colors.Turquoise:
+                    brush = Brushes.Turquoise;
+                    break;
+                case Colors.Yellow:
+                    brush = Brushes.Yellow;
+                    break;
+                case Colors.Red:
+                    brush = Brushes.Red;
+                    break;
+                case Colors.Orange:
+                    brush = Brushes.Orange;
+                    break;
+                case Colors.Purple:
+                    brush = Brushes.Purple;
+                    break;
+                case Colors.Green:
+                    brush = Brushes.Green;
+                    break;
+            }
+            return brush;
+        }
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Right)
+            if (e.KeyCode == Keys.D)
             {
-                game.Right();
+                game.Move("right");
+                updateGraphics();
             }
-            if (e.KeyCode == Keys.Left)
+            if (e.KeyCode == Keys.A)
             {
-                game.Left();
+                game.Move("left");
+                updateGraphics();
             }
             if (e.KeyCode == Keys.Space)
             {

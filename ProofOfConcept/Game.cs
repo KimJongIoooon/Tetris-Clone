@@ -7,21 +7,23 @@ using System.Threading.Tasks;
 
 namespace ProofOfConcept
 {
+    public enum Colors { Turquoise, Blue, Orange, Yellow, Green, Purple, Red };
     class Game
     {
-        bool started = false;
-        public bool Started
-        {
-            get { return started; }
-        }
         
+        public enum Directions {Left, Right, Up, Down}
+        bool _started = false;
         List<int> Numbers = new List<int>();
         private Block[,] _field = new Block[10, 24];
+        public int TickRate = 1000;//default 1 sec
+        public Tetramino _activeTetramino = new Tetramino(new List<Point>() { new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(1, 1) }, 0, 2);
 
+        public bool Started
+        {
+            get { return _started; }
+        }
         
-        public int TickRate;//default 1 sec
-        public Tetramino activeShape = new Tetramino(new List<Point>() { new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(1, 1) },0,2);
-
+        
         public void Rotate()
         {
             
@@ -29,54 +31,82 @@ namespace ProofOfConcept
         public void Start()
         {
 
-            if (!started)
+            if (!_started)
             {
-                started = true;
+                _started = true;
             }
         }
         public void Stop()
         {
 
         }
-        public void Left()
+        public void Move(string direction)
         {
+            int move;
+            if (direction == "left") {
+                move = -1;
+            } else if (direction == "right")
+            {
+                move = 1;
+            }
+            else
+            {
+                throw new System.ArgumentException("Only left or right allowed", "direction");
+            }
 
-        }
-        public void Right()
-        {
 
+            bool failed = false;
+            foreach (Point point in _activeTetramino.Points)
+            {
+                int newX = _activeTetramino.X + point.X + move;
+                int Y = _activeTetramino.Y + point.Y;
+                try{
+                    if (Field[newX, Y].Filled)
+                    {
+                        failed = true;
+                        break;
+                    }
+                }
+                catch
+                {
+                    failed = true;
+                    break;
+                }
+                
+            }
+
+            if (!failed)
+            {
+                _activeTetramino.X = _activeTetramino.X + move;
+            }
         }
         public void Drop()
         {
-
+            
         }
+
         public Block[,] Field
         {
             get
             {
-                if (started)
+                if (_started)
                 {
-                    Block[,] fieldWithShape = new Block[10, 24];
-                    Array.Copy(_field, fieldWithShape, _field.Length);
-
-                    foreach (Point point in activeShape.Points)
-                    {
-                        int shapeX = activeShape.X + point.X;
-                        int shapeY = activeShape.Y + point.Y;
-
-                        //dont draw if the block is outside the field.
-                        if(shapeX >= 0 && shapeY >= 0) {
-                            fieldWithShape[shapeX, shapeY].Filled = true;
-                            fieldWithShape[shapeX, shapeY].Color = activeShape.Color;
-                        } 
-                    }
-                    return fieldWithShape;
+                    return _field;
                 }
-                return new Block[10, 24];
+                else
+                {
+                    return new Block[10, 24];
+                }
+                
             }
         }
-
-        public bool Started1 { get => started; set => started = value; }
+        public Tetramino ActiveTetramino
+        {
+            get
+            {
+                return _activeTetramino;
+            }
+        }
 
         public Game()
         {
@@ -90,14 +120,14 @@ namespace ProofOfConcept
                 }
 
             }
-            started = false;
+            _started = false;
             TickRate = 1000; 
         }
 
         public void Tick()
         {
-            activeShape.Y = activeShape.Y + 1;
-            int currentColor = (int)activeShape.Color;
+            _activeTetramino.Y = _activeTetramino.Y + 1;
+            int currentColor = (int)_activeTetramino.Color;
             currentColor++;
             if (currentColor > 2)
             {
@@ -105,9 +135,9 @@ namespace ProofOfConcept
             }
             switch (currentColor)
             {
-                case 0: activeShape.Color = Colors.turquoise; break;
-                case 1: activeShape.Color = Colors.blue; break;
-                case 2: activeShape.Color = Colors.orange; break;
+                case 0: _activeTetramino.Color = Colors.Turquoise; break;
+                case 1: _activeTetramino.Color = Colors.Blue; break;
+                case 2: _activeTetramino.Color = Colors.Orange; break;
                 case 3: break;
             }
         }
@@ -120,16 +150,16 @@ namespace ProofOfConcept
                     _field[x, y] = new Block();
                 }
             }
-            _field[0, 0] = new Block(Colors.blue);
-            _field[1, 0] = new Block(Colors.green);
-            _field[2, 0] = new Block(Colors.orange);
-            _field[3, 0] = new Block(Colors.purple);
-            _field[4, 0] = new Block(Colors.red);
-            _field[5, 0] = new Block(Colors.turquoise);
-            _field[6, 0] = new Block(Colors.yellow);
-            _field[7, 0] = new Block(Colors.green);
-            _field[8, 0] = new Block(Colors.blue);
-            _field[9, 0] = new Block(Colors.green);
+            _field[0, 0] = new Block(Colors.Blue);
+            _field[1, 0] = new Block(Colors.Green);
+            _field[2, 0] = new Block(Colors.Orange);
+            _field[3, 0] = new Block(Colors.Purple);
+            _field[4, 0] = new Block(Colors.Red);
+            _field[5, 0] = new Block(Colors.Turquoise);
+            _field[6, 0] = new Block(Colors.Yellow);
+            _field[7, 0] = new Block(Colors.Green);
+            _field[8, 0] = new Block(Colors.Blue);
+            _field[9, 0] = new Block(Colors.Green);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace ProofOfConcept
             this.Points = baseShape;
             X = x;
             Y = y;
-            _color = Colors.red;
+            _color = Colors.Red;
         }
 
         public Tetramino(List<Point> baseShape, int x, int y, Colors color)
