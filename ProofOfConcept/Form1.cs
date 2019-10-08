@@ -20,7 +20,7 @@ namespace ProofOfConcept
         {
             InitializeComponent();
             game = new Game(DropTimer);
-            game.FillFieldTest();
+            
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -80,10 +80,10 @@ namespace ProofOfConcept
                 foreach (Point point in game._activeTetramino.Points)
                 {
                     int x = game._activeTetramino.X + point.X;
-                    int y = game._activeTetramino.Y + point.Y;
+                    int y = game._activeTetramino.Y - point.Y;
                     if(x>=0 && y >= 0)
                     {
-                        Brush brush = ColorToBrush(game.Field[x, y].Color);
+                        Brush brush = ColorToBrush(game._activeTetramino.Color);
                         graphics.FillRectangle(brush, CovertPixelsToPoints(x * blockSizePixels), CovertPixelsToPoints(y * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
                     }
                 }

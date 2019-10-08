@@ -11,6 +11,7 @@ namespace ProofOfConcept
 {
     public enum Colors { Turquoise, Blue, Orange, Yellow, Green, Purple, Red };
     public enum Directions { Left, Right, Up, Down };
+    
     class Game
     {
         
@@ -20,7 +21,7 @@ namespace ProofOfConcept
         private Block[,] _field = new Block[10, 24];
         private System.Windows.Forms.Timer _dropTimer;
         public int TickRate = 1000;//default 1 sec
-        public Tetramino _activeTetramino = new Tetramino(new List<Point>() { new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(1, 1) }, 0, 2);
+        public Tetramino _activeTetramino = new Tetramino(5, 0);
 
         public bool Started
         {
@@ -62,7 +63,7 @@ namespace ProofOfConcept
                 foreach (Point point in _activeTetramino.Points)
                 {
                     int X = _activeTetramino.X + point.X;
-                    int newY = _activeTetramino.Y + point.Y + moveY;
+                    int newY = _activeTetramino.Y - point.Y + moveY;
                     try
                     {
                         if (Field[X, newY].Filled)
@@ -97,7 +98,7 @@ namespace ProofOfConcept
                 foreach (Point point in _activeTetramino.Points)
                 {
                     int newX = _activeTetramino.X + point.X + moveX;
-                    int Y = _activeTetramino.Y + point.Y;
+                    int Y = _activeTetramino.Y - point.Y;
                     try
                     {
                         if (Field[newX, Y].Filled)
@@ -119,48 +120,101 @@ namespace ProofOfConcept
             {
                 _activeTetramino.X = _activeTetramino.X + moveX;
                 _activeTetramino.Y = _activeTetramino.Y + moveY;
-                _dropTimer.Stop();
+                if(direction == Directions.Down)
+                {
+                    _dropTimer.Stop();
+                }
             }
+            
         }
         public void Drop()
         {
-
-            
-            for (int Y = 24; Y >= 0; Y--)
+            for (int Y = _activeTetramino.Y; Y <= 24; Y++)
             {
-                bool failed = false;
+                bool Failed = false;
                 foreach (Point point in _activeTetramino.Points)
                 {
                     int X = _activeTetramino.X + point.X;
-                    int newY = Y + point.Y;
+                    int newY = Y - point.Y;
                     try
                     {
                         if (Field[X, newY].Filled)
                         {
-                            failed = true;
+                            Failed = true;
                             _dropTimer.Start();
                             break;
                         }
                     }
                     catch
                     {
-                        failed = true;
+                        Failed = true;
                         _dropTimer.Start();
                         break;
                     }
 
                 }
 
-                if (!failed)
+                if (Failed)
                 {
-                    _activeTetramino.Y = Y;
+                    _activeTetramino.Y = Y-1;
+                    BlockDropped();
                     break;
                 }
             }   
             _dropTimer.Stop();
 
         }
+        private void CheckLines()
+        {
+            for (int Row = 23; Row >= 0; Row--)
+            {
+                bool isFullRow = true;
+                for (int Block = 0; Block < 9; Block++)
+                {
+                    if (!_field[Block, Row].Filled)
+                    {
+                        isFullRow = false;
+                        break;
+                    }    
 
+                }
+                if (isFullRow)
+                {
+                    for (int newrow = Row; newrow >= 0; newrow--)
+                    {
+                        for (int i = 0; i < 9; i++)
+                        {
+                            if(newrow != 0)
+                            {
+                                _field[i, newrow] = _field[i, newrow - 1];
+                            }
+                            else
+                            {
+                                _field[i, newrow] = new Block();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        private void BlockDropped()
+        {
+            //add _activeTetramino to the Field
+            foreach (Point point in _activeTetramino.Points)
+            {
+                int x = _activeTetramino.X + point.X;
+                int y = _activeTetramino.Y - point.Y;
+                _field[x, y].Filled = true;
+                _field[x, y].Color = _activeTetramino.Color;
+            }
+            CheckLines();
+            CheckLines();
+            CheckLines();
+            CheckLines();
+
+            //new _activetramino;
+            _activeTetramino = new Tetramino(5, 0);
+        }
         public Block[,] Field
         {
             get
@@ -206,19 +260,7 @@ namespace ProofOfConcept
         public void Tick()
         {
             Move(Directions.Down);
-            int currentColor = (int)_activeTetramino.Color;
-            currentColor++;
-            if (currentColor > 2)
-            {
-                currentColor = 0;
-            }
-            switch (currentColor)
-            {
-                case 0: _activeTetramino.Color = Colors.Turquoise; break;
-                case 1: _activeTetramino.Color = Colors.Blue; break;
-                case 2: _activeTetramino.Color = Colors.Orange; break;
-                case 3: break;
-            }
+            
         }
 
         public void FillFieldTest() {
