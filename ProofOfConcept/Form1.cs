@@ -13,53 +13,40 @@ namespace ProofOfConcept
     public partial class Form1 : Form
     {
         Game game;
-        List<Point> pointsT = new List<Point>() { new Point(0, 0), new Point(0, 1) , new Point(0, -1), new Point(1, 1)};
-        Tetramino shapeT;
+
 
 
         public Form1()
         {
             InitializeComponent();
-            shapeT = new Tetramino(pointsT, 10, 6);
-            game = new Game();
+            game = new Game(DropTimer);
             game.FillFieldTest();
         }
 
         private void Button1_Click(object sender, EventArgs e)
         {
-            shapeT.Rotate();
 
-            updateGraphics();
+
+            UpdateGraphics();
         }
 
-        private void updateGraphics()
+        private void UpdateGraphics()
         {
             pnlField.Invalidate();
             this.Invalidate();
         }
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            // Vraag het Graphics object op, dat bij dit form hoort.
-            // Met dit graphics object kunnen we op het form tekenen.
-            Graphics graphics = e.Graphics;
 
-            int margin = 100;
-            int blockSize = 10;
-
-            foreach (Point point in shapeT.Points)
-            {
-                int x = margin + point.X * blockSize;
-                int y = margin + point.Y * blockSize;
-                graphics.FillRectangle(Brushes.Black, x, y, blockSize, blockSize);
-            }
         }
 
-        private void Timer1_Tick(object sender, EventArgs e)
+        private void TickTimer_Tick(object sender, EventArgs e)
         {
             game.Tick();
             lblTest.Enabled = !lblTest.Enabled;
-            updateGraphics();
+            UpdateGraphics();
         }
+
         private int CovertPixelsToPoints(float pixels)
         {
             Graphics g = CreateGraphics();
@@ -137,25 +124,37 @@ namespace ProofOfConcept
         {
             if (e.KeyCode == Keys.D)
             {
-                game.Move("right");
-                updateGraphics();
+                game.Move(Directions.Right);
+                UpdateGraphics();
             }
             if (e.KeyCode == Keys.A)
             {
-                game.Move("left");
-                updateGraphics();
+                game.Move(Directions.Left);
+                UpdateGraphics();
             }
             if (e.KeyCode == Keys.Space)
             {
                 game.Drop();
+                UpdateGraphics();
             }
             if (e.KeyCode == Keys.Enter)
             {
                 game.Start();
+                UpdateGraphics();
             }
             if (e.KeyCode == Keys.Return)
             {
                 game.Stop();
+            }
+            if(e.KeyCode == Keys.S)
+            {
+                game.Rotate(Directions.Left);
+                UpdateGraphics();
+            }
+            if(e.KeyCode == Keys.W)
+            {
+                game.Rotate(Directions.Right);
+                UpdateGraphics();
             }
         }
 
@@ -166,11 +165,16 @@ namespace ProofOfConcept
             if (!game.Started)
             {
 
-                timer1.Start();
+                TickTimer.Start();
 
             }
             game.Start();
             
+        }
+
+        private void DropTimer_Tick(object sender, EventArgs e)
+        {
+            game.Drop();
         }
     }
 }

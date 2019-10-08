@@ -1,20 +1,24 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace ProofOfConcept
 {
     public enum Colors { Turquoise, Blue, Orange, Yellow, Green, Purple, Red };
+    public enum Directions { Left, Right, Up, Down };
     class Game
     {
         
-        public enum Directions {Left, Right, Up, Down}
+        
         bool _started = false;
         List<int> Numbers = new List<int>();
         private Block[,] _field = new Block[10, 24];
+        private System.Windows.Forms.Timer _dropTimer;
         public int TickRate = 1000;//default 1 sec
         public Tetramino _activeTetramino = new Tetramino(new List<Point>() { new Point(0, 0), new Point(0, 1), new Point(0, -1), new Point(1, 1) }, 0, 2);
 
@@ -24,9 +28,17 @@ namespace ProofOfConcept
         }
         
         
-        public void Rotate()
+        public void Rotate(Directions direction)
         {
-            
+            if(direction == Directions.Left)
+            {
+                _activeTetramino.Rotate(Directions.Left);
+            }
+            if (direction == Directions.Right)
+            {
+                _activeTetramino.Rotate(Directions.Right);
+            }
+
         }
         public void Start()
         {
@@ -40,49 +52,113 @@ namespace ProofOfConcept
         {
 
         }
-        public void Move(string direction)
+        public void Move(Directions direction)
         {
-            int move;
-            if (direction == "left") {
-                move = -1;
-            } else if (direction == "right")
-            {
-                move = 1;
-            }
-            else
-            {
-                throw new System.ArgumentException("Only left or right allowed", "direction");
-            }
-
-
             bool failed = false;
-            foreach (Point point in _activeTetramino.Points)
+            int moveY = 0;
+            if (direction == Directions.Down)
             {
-                int newX = _activeTetramino.X + point.X + move;
-                int Y = _activeTetramino.Y + point.Y;
-                try{
-                    if (Field[newX, Y].Filled)
+                moveY = +1;
+                foreach (Point point in _activeTetramino.Points)
+                {
+                    int X = _activeTetramino.X + point.X;
+                    int newY = _activeTetramino.Y + point.Y + moveY;
+                    try
+                    {
+                        if (Field[X, newY].Filled)
+                        {
+                            failed = true;
+                            _dropTimer.Start();
+                            break;
+                        }
+                    }
+                    catch
+                    {
+                        failed = true;
+                        _dropTimer.Start();
+                        break;
+                    }
+
+                }
+            }
+
+            int moveX = 0;
+            if (direction == Directions.Left || direction == Directions.Right)
+            {
+                if (direction == Directions.Left)
+                {
+                    moveX = -1;
+                }
+                else if (direction == Directions.Right)
+                {
+                    moveX = 1;
+                }
+
+                foreach (Point point in _activeTetramino.Points)
+                {
+                    int newX = _activeTetramino.X + point.X + moveX;
+                    int Y = _activeTetramino.Y + point.Y;
+                    try
+                    {
+                        if (Field[newX, Y].Filled)
+                        {
+                            failed = true;
+                            break;
+                        }
+                   }
+                    catch
                     {
                         failed = true;
                         break;
                     }
+
                 }
-                catch
-                {
-                    failed = true;
-                    break;
-                }
-                
             }
 
             if (!failed)
             {
-                _activeTetramino.X = _activeTetramino.X + move;
+                _activeTetramino.X = _activeTetramino.X + moveX;
+                _activeTetramino.Y = _activeTetramino.Y + moveY;
+                _dropTimer.Stop();
             }
         }
         public void Drop()
         {
+
             
+            for (int Y = 24; Y >= 0; Y--)
+            {
+                bool failed = false;
+                foreach (Point point in _activeTetramino.Points)
+                {
+                    int X = _activeTetramino.X + point.X;
+                    int newY = Y + point.Y;
+                    try
+                    {
+                        if (Field[X, newY].Filled)
+                        {
+                            failed = true;
+                            _dropTimer.Start();
+                            break;
+                        }
+                    }
+                    catch
+                    {
+                        failed = true;
+                        _dropTimer.Start();
+                        break;
+                    }
+
+                }
+
+                if (!failed)
+                {
+                    _activeTetramino.Y = Y;
+                    break;
+                }
+            }   
+            _dropTimer.Stop();
+
         }
 
         public Block[,] Field
@@ -108,7 +184,7 @@ namespace ProofOfConcept
             }
         }
 
-        public Game()
+        public Game(System.Windows.Forms.Timer DropTimer)
         {
             _field[0, 0] = new Block();
             //Assign empty blocks to field.
@@ -121,12 +197,15 @@ namespace ProofOfConcept
 
             }
             _started = false;
-            TickRate = 1000; 
+            TickRate = 1000;
+
+            //Assign Droptimer
+            _dropTimer = DropTimer;
         }
 
         public void Tick()
         {
-            _activeTetramino.Y = _activeTetramino.Y + 1;
+            Move(Directions.Down);
             int currentColor = (int)_activeTetramino.Color;
             currentColor++;
             if (currentColor > 2)

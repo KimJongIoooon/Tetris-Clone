@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+
 namespace ProofOfConcept
 {
     class Tetramino
@@ -39,17 +40,31 @@ namespace ProofOfConcept
             _color = color;
         }
 
-        public void Rotate()
+        public void Rotate(Directions direction)
         {
-            //rotates the figure
-            int[,] rotateMatrix = new int[,] { { 0, 1 }, { -1, 0 } };
             List<Point> newShape = new List<Point>();
-            foreach (Point point in Points)
+
+            if (direction == Directions.Right)
             {
-                double rotateX = Math.Round(point.X * Math.Cos(Math.PI / 2) - point.Y * Math.Sin(Math.PI / 2));
-                double rotateY = Math.Round(point.X * Math.Sin(Math.PI / 2) - point.Y * Math.Cos(Math.PI / 2));
-                Point rotatedPoint = new Point(Convert.ToInt32(rotateX), Convert.ToInt32(rotateY));
-                newShape.Add(rotatedPoint);
+                //rotates the figure
+                foreach (Point point in Points)
+                {
+                    double rotateX = Math.Round(point.X * Math.Cos(Math.PI / 2) - point.Y * Math.Sin(Math.PI / 2));
+                    double rotateY = Math.Round(point.X * Math.Sin(Math.PI / 2) - point.Y * Math.Cos(Math.PI / 2));
+                    Point rotatedPoint = new Point(Convert.ToInt32(rotateX), Convert.ToInt32(rotateY));
+                    newShape.Add(rotatedPoint);
+                }
+            }
+            if (direction == Directions.Left)
+            {
+                //rotates the figure
+                foreach (Point point in Points)
+                {
+                    double rotateX = Math.Round(point.X * Math.Cos(Math.PI * 1.5) - point.Y * Math.Sin(Math.PI * 1.5));
+                    double rotateY = Math.Round(point.X * Math.Sin(Math.PI * 1.5) - point.Y * Math.Cos(Math.PI * 1.5));
+                    Point rotatedPoint = new Point(Convert.ToInt32(rotateX), Convert.ToInt32(rotateY));
+                    newShape.Add(rotatedPoint);
+                }
             }
             Points = newShape;
         }
