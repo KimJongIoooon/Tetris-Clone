@@ -64,14 +64,15 @@ namespace ProofOfConcept
             if (game.Started)
             {
                 //draw field
-                for (int y = 0; y < 24; y++)
+                for (int iRow = 0; iRow < 24; iRow++)
                 {
-                    for (int x = 0; x < 10; x++)
+                    for (int iColumn = 0; iColumn <= 9; iColumn++)
                     {
-                        if (game.Field[x, y].Filled)
+                        if (game.Field[iColumn, iRow].Filled)
                         {
-                            Brush brush = ColorToBrush(game.Field[x, y].Color);
-                            graphics.FillRectangle(brush, CovertPixelsToPoints(x * blockSizePixels), CovertPixelsToPoints(y * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
+                            Brush brush = ColorToBrush(game.Field[iColumn, iRow].Color);
+                            graphics.FillRectangle(brush, CovertPixelsToPoints(iColumn * blockSizePixels), CovertPixelsToPoints(iRow * blockSizePixels), CovertPixelsToPoints(blockSizePixels), CovertPixelsToPoints(blockSizePixels));
+                            
                         } 
 
                     }
@@ -177,4 +178,4 @@ namespace ProofOfConcept
             game.Drop();
         }
     }
-}
+}   

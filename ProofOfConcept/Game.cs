@@ -21,7 +21,7 @@ namespace ProofOfConcept
         private Block[,] _field = new Block[10, 24];
         private System.Windows.Forms.Timer _dropTimer;
         public int TickRate = 1000;//default 1 sec
-        public Tetramino _activeTetramino = new Tetramino(5, 0);
+        public Tetramino _activeTetramino = new Tetramino(5, 1);
 
         public bool Started
         {
@@ -157,21 +157,25 @@ namespace ProofOfConcept
                 if (Failed)
                 {
                     _activeTetramino.Y = Y-1;
-                    BlockDropped();
+                    AddBlockToField();
+                    RemoveFullRows();
+                    NewActiveTetramino();
                     break;
                 }
             }   
             _dropTimer.Stop();
 
         }
-        private void CheckLines()
+        private void RemoveFullRows()
         {
+            //Loops through the rows, the _field is inverted so we start at 23 to begin at the bottom.
             for (int Row = 23; Row >= 0; Row--)
             {
-                bool isFullRow = true;
-                for (int Block = 0; Block < 9; Block++)
+                bool isFullRow = true;//asume the row is full at start.
+                //loops through all the blocks in the row
+                for (int Block = 0; Block <= 9; Block++)
                 {
-                    if (!_field[Block, Row].Filled)
+                    if (!_field[Block, Row].Filled)//if a block is empty
                     {
                         isFullRow = false;
                         break;
@@ -180,40 +184,48 @@ namespace ProofOfConcept
                 }
                 if (isFullRow)
                 {
+                    //Loops through all the rows from the row that is full to the top.
                     for (int newrow = Row; newrow >= 0; newrow--)
                     {
-                        for (int i = 0; i < 9; i++)
+                        //Loops through the blocks in the row.
+                        for (int i = 0; i <= 9; i++)
                         {
                             if(newrow != 0)
                             {
-                                _field[i, newrow] = _field[i, newrow - 1];
+                                //Not the top row
+                                _field[i, newrow] = _field[i, newrow - 1];//Copy all the blocks in the row above.
                             }
                             else
                             {
-                                _field[i, newrow] = new Block();
+                                //The top row.
+                                _field[i, newrow] = new Block();//Add empty blocks to the row.
                             }
                         }
                     }
+                    //The full row is now overridden by the next row so we will have to check it again.
+                    Row++;
                 }
             }
         }
-        private void BlockDropped()
+        private void AddBlockToField()
         {
-            //add _activeTetramino to the Field
-            foreach (Point point in _activeTetramino.Points)
+            //Removes Block from field.
+            foreach (Point point in _activeTetramino.Points)//Loop trough each point in the List<point> Points
             {
+                //the Tetramino has a X and a Y coordinate. 
+                //The coordinates of the blocks relative to the Tetramino are inside the List<point> Points
                 int x = _activeTetramino.X + point.X;
                 int y = _activeTetramino.Y - point.Y;
-                _field[x, y].Filled = true;
-                _field[x, y].Color = _activeTetramino.Color;
+                //Add tetramino block to the field.
+                _field[x, y].Filled = true;//Set block to filled.
+                _field[x, y].Color = _activeTetramino.Color;//set the color.
             }
-            CheckLines();
-            CheckLines();
-            CheckLines();
-            CheckLines();
+        }
 
+        private void NewActiveTetramino()
+        {
             //new _activetramino;
-            _activeTetramino = new Tetramino(5, 0);
+            _activeTetramino = new Tetramino(5, 1);
         }
         public Block[,] Field
         {
